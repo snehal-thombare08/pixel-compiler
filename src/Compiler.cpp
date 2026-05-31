@@ -54,7 +54,7 @@ void Compiler::compile() {
     IRGeneratorLLVM irGenerator(_typeContext, _functionRegistry, _globalRegistry);
     irGenerator.visit(ast);
 
-    irGenerator.createExecutable("../out");
+   irGenerator.createExecutable("out");
 }
 
 void Compiler::initFunctions() {
