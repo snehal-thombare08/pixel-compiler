@@ -460,7 +460,8 @@ std::unique_ptr<AST::Expression> Parser::parsePrimary() {
         if (checkNext<LeftParen>()) return parseFunctionCall();
         if (checkNext<LeftBracket>()) return parseArrayIndex();
 
-        auto variable = std::make_unique<AST::VariableExpression>(peekPrevious().metadata, expect<Identifier>().name);
+       const auto pos = peek().metadata;
+auto variable = std::make_unique<AST::VariableExpression>(pos, expect<Identifier>().name);
 
         return variable;
     }
