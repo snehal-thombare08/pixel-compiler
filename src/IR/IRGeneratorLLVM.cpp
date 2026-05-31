@@ -391,16 +391,19 @@ llvm::Value* IRGeneratorLLVM::visit(const AST::BinaryExpression& node) {
         return _builder->CreateCall(operationFunc, {lhs, rhs}, "binop");
     }
 
-    switch (node.op) {
+   switch (node.op) {
         case Operator::Plus:
             if (isFloat) return _builder->CreateFAdd(lhs, rhs, "addtmp");
             if (isInt) return _builder->CreateAdd(lhs, rhs, "addtmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for Plus");
         case Operator::Minus:
             if (isFloat) return _builder->CreateFSub(lhs, rhs, "subtmp");
             if (isInt) return _builder->CreateSub(lhs, rhs, "subtmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for Minus");
         case Operator::Star:
             if (isFloat) return _builder->CreateFMul(lhs, rhs, "multmp");
             if (isInt) return _builder->CreateMul(lhs, rhs, "multmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for Star");
         case Operator::Slash:
             lhs = castToType(lhs, _builder->getFloatTy());
             rhs = castToType(rhs, _builder->getFloatTy());
@@ -408,30 +411,35 @@ llvm::Value* IRGeneratorLLVM::visit(const AST::BinaryExpression& node) {
         case Operator::Equal:
             if (isFloat) return _builder->CreateFCmpOEQ(lhs, rhs, "eqtmp");
             if (isInt) return _builder->CreateICmpEQ(lhs, rhs, "eqtmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for Equal");
         case Operator::NotEqual:
             if (isFloat) return _builder->CreateFCmpONE(lhs, rhs, "neqtmp");
             if (isInt) return _builder->CreateICmpNE(lhs, rhs, "neqtmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for NotEqual");
         case Operator::GreaterThan:
-            // Integers use ICmp, Floats use FCmp
-            // UGT = Unsigned Greater Than, SGT = Signed Greater Than, OGT = Ordered Greater Than
             if (isFloat) return _builder->CreateFCmpOGT(lhs, rhs, "cmptmp");
             if (isInt) return _builder->CreateICmpSGT(lhs, rhs, "cmptmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for GreaterThan");
         case Operator::GreaterEqual:
             if (isFloat) return _builder->CreateFCmpOGE(lhs, rhs, "cmptmp");
             if (isInt) return _builder->CreateICmpSGE(lhs, rhs, "cmptmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for GreaterEqual");
         case Operator::LessThan:
             if (isFloat) return _builder->CreateFCmpOLT(lhs, rhs, "cmptmp");
             if (isInt) return _builder->CreateICmpSLT(lhs, rhs, "cmptmp");
+            throw std::runtime_error("| LLVM | Internal: unexpected type for LessThan");
         case Operator::LessEqual:
             if (isFloat) return _builder->CreateFCmpOLE(lhs, rhs, "cmptmp");
             if (isInt) return _builder->CreateICmpSLE(lhs, rhs, "cmptmp");
-
+            throw std::runtime_error("| LLVM | Internal: unexpected type for LessEqual");
         case Operator::LogicalAnd:
             return _builder->CreateLogicalAnd(lhs, rhs, "logandtmp");
         case Operator::LogicalOr:
             return _builder->CreateLogicalOr(lhs, rhs, "logortmp");
         case Operator::Exclamation:
             return _builder->CreateNot(lhs, "nottmp");
+        default:
+            throw std::runtime_error("| LLVM | Internal: unhandled binary operator");
     }
 
     return nullptr;
